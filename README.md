@@ -167,7 +167,7 @@
 
 `cp -r k8s-soft/flanneld kubernetes/server/bin/node/`
 
-`cp -r k8s-soft/kubernetes/server/bin/kube* kubernetes/server/bin/master/`
+`cp -r k8s-soft/kubernetes/server/bin/kube-* kubernetes/server/bin/master/`
 
 `cp -r k8s-soft/kubernetes/server/bin/kubelet kubernetes/server/bin/master/`
 
@@ -179,19 +179,19 @@
 
 `for node in k8s-master k8s-node-1 k8s-node-2 k8s-node-3;do`
 
-`rsync -avzP /root/kubernetes/server/node/${node}:/usr/local/bin/`
+`rsync -avzP /root/kubernetes/server/node/ ${node}:/usr/local/bin/`
 
 `done`
 
 `for master in k8s-master;do`
 
-`rsync -avzP /root/kubernetes/server/master/${master}:/usr/local/bin/`
+`rsync -avzP /root/kubernetes/server/master/ ${master}:/usr/local/bin/`
 
 `done`
 
 `for etcd in k8s-node-1 k8s-node-2 k8s-node-3;do`
 
-`rsync -avzP /root/kubernetes/server/etcd/${etcd}:/usr/local/bin/`
+`rsync -avzP /root/kubernetes/server/etcd/ ${etcd}:/usr/local/bin/`
 
 `done`
 
