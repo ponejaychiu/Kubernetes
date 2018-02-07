@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        run: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: 10.100.1.31/library/nginx:1.9
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        roles: node
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-1
+  labels:
+    app: nginx-1
+spec:
+  ports:
+  - name: http
+    port: 81
+    nodePort: 301
+  selector:
+    run: nginx
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-2
+  labels:
+    app: nginx-2
+spec:
+  ports:
+  - name: http
+    port: 82
+    nodePort: 302
+  selector:
+    run: nginx
+  type: NodePort

@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: docker-blog
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        web: docker-blog
+    spec:
+      containers:
+      - name: docker-blog
+        image: 10.100.1.31/library/docker-blog:1.0
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-blog
+  labels:
+    web: docker-blog
+spec:
+  ports:
+  - name: http
+    port: 8080
+    nodePort: 300
+    targetPort: 80
+  selector:
+    web: docker-blog
+  type: NodePort

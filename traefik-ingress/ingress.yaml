@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: traefik-ingress
+  namespace: default
+spec:
+  rules:
+  - host: traefik.nginx-1.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx-1
+          servicePort: 81
+  - host: traefik.nginx-2.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx-2
+          servicePort: 82
+  - host: traefik.docker-blog.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: docker-blog
+          servicePort: 8080
+  - host: traefik.locust.io
+    http:
+     paths:
+     - path: /
+       backend:
+         serviceName: locust-master
+         servicePort: 8089
