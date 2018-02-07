@@ -79,19 +79,19 @@ master主机添加以下内容：
 
 Master主机生成公私钥：
 
-**ssh-keygen -t rsa*
+**ssh-keygen -t rsa**
 
 ![ssh-keygen](images/ssh-keygen.png)
 
 在其他两个主机新建目录/root/.ssh/，然后在master主机执行以下命令：
 
-cd /root/.ssh/
+**cd /root/.ssh/**
 
-for item in {k8s-node-1,k8s-node-2};do
+**for item in {k8s-node-1,k8s-node-2};do**
 
-scp -r id_rsa.pub ${item}:/root/.ssh/authorized_keys
+**scp -r id_rsa.pub ${item}:/root/.ssh/authorized_keys**
 
-done
+**done**
 
 ## 2、所有主机关闭防火墙：
 
@@ -117,29 +117,29 @@ done
 
 1、下载仓库：
 
-rpm --importhttps://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+**rpm --importhttps://www.elrepo.org/RPM-GPG-KEY-elrepo.org **
 
-rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+**rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm **
 
 2、查看可用的内核相关包：
 
-yum --disablerepo="*"--enablerepo="elrepo-kernel" list available
+**yum --disablerepo="*"--enablerepo="elrepo-kernel" list available**
 
 3、安装最新主线文档内核：
 
-yum --enablerepo=elrepo-kernel installkernel-ml
+**yum --enablerepo=elrepo-kernel installkernel-ml**
 
 4、设置grub默认内核版本：
 
-vi /etc/default/grub,设置GRUB_DEFAULT=0
+**vi /etc/default/grub,设置GRUB_DEFAULT=0**
 
 5、重新创建内核配置 ：
 
-grub2-mkconfig -o /boot/grub2/grub.cfg
+**grub2-mkconfig -o /boot/grub2/grub.cfg**
 
 6、查看已安装内核版本列表：
 
-awk -F\' '$1=="menuentry " {print$2}' /etc/grub2.cfg
+**awk -F\' '$1=="menuentry " {print$2}' /etc/grub2.cfg**
 
 # 软件安装：
 
@@ -1295,31 +1295,7 @@ admin set defaultcontext：
 
 将生成的admin.p12证书导入浏览器即可；
 
-# 搭建一个harbor镜像仓库:
 
-## Master节点(10.100.1.31)搭建:
-
-Master节点需要安装docker和docker-compose
-
-修改docker.service文件，添加以下内容：
-
-**--insecure-registry 10.100.1.31**
-
-## Pod镜像：
-
-**docker pullregistry.access.redhat.com/rhel7/pod-infrastructure:latest**
-
-## coredns镜像：
-
-**docker pull registry.docker-cn.com/coredns/coredns:0.9.10**
-
-## kube-router镜像：
-
-**docker pull cloudnativelabs/kube-router:latest**
-
-## dashboard镜像：
-
-**docker pull registry.docker-cn.com/kubernetesdashboarddev/kubernetes-dashboard-amd64:head**
 
 ## 
 
