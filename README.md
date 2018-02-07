@@ -1268,7 +1268,9 @@ admin set defaultcontext：
 
 ## 3、通过API server 访问dashboard：
 
-**注意：**想要用API server的方式访问dashboard页面，则必须执行[此步](#7.5、绑定用户到角色admin-bind：)；
+**注意：**
+
+想要用API server的方式访问dashboard页面，则必须执行[此步](#7.5、绑定用户到角色admin-bind：)；
 
 **查询apiserver地址：**
 
