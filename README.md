@@ -117,9 +117,9 @@ Master主机生成公私钥：
 
 1、下载仓库：
 
-**rpm --importhttps://www.elrepo.org/RPM-GPG-KEY-elrepo.org **
+**rpm --importhttps://www.elrepo.org/RPM-GPG-KEY-elrepo.org**
 
-**rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm **
+**rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm**
 
 2、查看可用的内核相关包：
 
