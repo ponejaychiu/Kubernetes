@@ -6,12 +6,14 @@
 
 ### 1.1、拉取MySQL镜像：
 
-`docker pull mysql:5.7.20`
+```shell
+docker pull mysql:5.7.20
+```
 
 ### 1.2、运行MySQL容器：
 
 ```shell
-docker run --name mysql -eMYSQL_ROOT_PASSWORD=bangsun -v /data/mysql/mysql-5.7.20/:/var/lib/mysql -d -p 3306:3306 --rm mysql:5.7.20
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=bangsun -v /data/mysql/mysql-5.7.20/:/var/lib/mysql -d -p 3306:3306 --rm mysql:5.7.20
 ```
 
 **命令解释：**
@@ -30,7 +32,9 @@ docker run --name mysql -eMYSQL_ROOT_PASSWORD=bangsun -v /data/mysql/mysql-5.7.2
 
 **进入容器：**
 
-`docker exec -it mysql /bin/bash`
+```shell
+docker exec -it mysql /bin/bash
+```
 
 可以看到数据库版本为**Server version: 5.7.20 MySQLCommunity Server (GPL)**
 
@@ -40,16 +44,20 @@ docker run --name mysql -eMYSQL_ROOT_PASSWORD=bangsun -v /data/mysql/mysql-5.7.2
 
 克隆GitHub上MySQL官方的Docekerfile和docker-entrypoint.sh文件：
 
-`git clone https://github.com/docker-library/mysql.git`
+```shell
+git clone https://github.com/docker-library/mysql.git
+```
 
 **这里我选择了5.7版本的：**
 
 ### 2.1、修改Dockerfile：
 
-`vi Dockerfile`
+```shell
+vi Dockerfile
+```
 
 ```shell
-RUN sed -i '/\[mysqld\]/aserver-id=1\nlog-bin' /etc/mysql/conf.d/docker.cnf
+RUN sed -i '/\[mysqld\]/a server-id=1\nlog-bin' /etc/mysql/conf.d/docker.cnf
 ```
 
 **命令解释：**
@@ -68,11 +76,13 @@ log-bin
 
 ### 2.2、修改docker-entrypoint.sh：
 
-`vi docker-entrypoint.sh`
+```shell
+vi docker-entrypoint.sh
+```
 
 ```shell
-echo "CREATE USER'$MYSQL_REPLICATION_USER'@'%' IDENTIFIED BY '$MYSQL_REPLICATION_PASSWORD';" | "${mysql[@]}"
-echo "GRANT REPLICATION SLAVE ON *.*TO '$MYSQL_REPLICATION_USER'@'%' IDENTIFIED BY '$MYSQL_REPLICATION_PASSWORD';" | "${mysql[@]}"
+echo "CREATE USER'$MYSQL_REPLICATION_USER'@'%' IDENTIFIED BY '$MYSQL_REPLICATION_PASSWORD';" |"${mysql[@]}"
+echo "GRANT REPLICATION SLAVE ON *.*TO '$MYSQL_REPLICATION_USER'@'%' IDENTIFIED BY '$MYSQL_REPLICATION_PASSWORD';" |"${mysql[@]}"
 echo 'FLUSH PRIVILEGES ;' |"${mysql[@]}"
 ```
 
@@ -84,7 +94,9 @@ echo 'FLUSH PRIVILEGES ;' |"${mysql[@]}"
 
 运行以下命令即可：
 
-`docker build -t jaychiu/mysql-master:5.7.21 .`
+```shell
+docker build -t jaychiu/mysql-master:5.7.21 .
+```
 
 ![img](../images/mysql-4.png)
 
@@ -92,7 +104,9 @@ echo 'FLUSH PRIVILEGES ;' |"${mysql[@]}"
 
 ### 3.1、修改Dockerfile：
 
-`vi Dockerfile`
+```shell
+vi Dockerfile
+```
 
 ```shell
 RUN RAND="$(date +%s | rev | cut -c1-2)$(echo ${RANDOM})" && sed -i '/\[mysqld\]/aserver-id='$RAND'\nlog-bin' /etc/mysql/conf.d/docker.cnf
@@ -114,11 +128,13 @@ log-bin
 
 ### 3.2、修改docker-entrypoint.sh：
 
-`vi docker-entrypoint.sh`
+```shell
+vi docker-entrypoint.sh
+```
 
 ```shell
 echo "STOP SLAVE;" |"${mysql[@]}"
-echo "CHANGE MASTER TOmaster_host='$MYSQL_MASTER_SERVICE_HOST',master_user='$MYSQL_REPLICATION_USER', master_password='$MYSQL_REPLICATION_PASSWORD';" | "${mysql[@]}"
+echo "CHANGE MASTER TO master_host='$MYSQL_MASTER_SERVICE_HOST',master_user='$MYSQL_REPLICATION_USER', master_password='$MYSQL_REPLICATION_PASSWORD';" |"${mysql[@]}"
 echo "START SLAVE;" |"${mysql[@]}"
 ```
 
@@ -134,7 +150,9 @@ k8s的service创建后，会自动分配一个cluster ip，这个cluster ip是�
 
 运行以下命令即可：
 
-`docker build -t jaychiu/mysql-slave:5.7.21 .`
+```shell
+docker build -t jaychiu/mysql-slave:5.7.21 .
+```
 
 ![img](../images/mysql-7.png)
 
@@ -144,7 +162,9 @@ k8s的service创建后，会自动分配一个cluster ip，这个cluster ip是�
 
 新建mysql-master-rc.yml文件和mysql-master-svc.yml文件；
 
-`vi mysql-master-rc.yml`
+```shell
+vi mysql-master-rc.yml
+```
 
 ```yaml
 apiVersion: v1
@@ -178,11 +198,15 @@ spec:
 
 部署mysql-master的rc服务：
 
-`kubectl create -f mysql-master-rc.yml`
+```shell
+kubectl create -f mysql-master-rc.yml
+```
 
 ![img](../images/mysql-8.png)
 
-`vi mysql-master-svc.yml`
+```shell
+vi mysql-master-svc.yml
+```
 
 ```yaml
 apiVersion: v1
@@ -201,7 +225,9 @@ spec:
 
 部署mysql-master的svc服务：
 
-`kubectl create -f mysql-master-svc.yml`
+```shell
+kubectl create -f mysql-master-svc.yml
+```
 
 ![img](../images/mysql-9.png)
 
@@ -215,7 +241,9 @@ spec:
 
 新建mysql-slave-rc.yml文件和mysql-slave-svc.yml文件；
 
-`vi mysql-slave-rc.yml`
+```shell
+vi mysql-slave-rc.yml
+```
 
 ```yaml
 apiVersion: v1
@@ -252,11 +280,15 @@ spec:
 
 部署mysql-slave的rc服务：
 
-`kubectl create -f mysql-slave-rc.yml`
+```shell
+kubectl create -f mysql-slave-rc.yml
+```
 
 ![img](../images/mysql-12.png)
 
-`vi mysql-slave-svc.yml`
+```shell
+vi mysql-slave-svc.yml
+```
 
 ```yaml
 apiVersion: v1
@@ -274,7 +306,9 @@ spec:
 ```
 部署mysql-slave的svc服务：
 
-`kubectl create -f mysql-slave-svc.yml`
+```shell
+kubectl create -f mysql-slave-svc.yml
+```
 
 ![img](../images/mysql-13.png)
 
@@ -292,21 +326,30 @@ spec:
 
 连接mysql-master的pod容器：
 
-`kubectl exec -it mysql-master-x98d9/bin/bash`
+```shell
+kubectl exec -it mysql-master-x98d9/bin/bash
+```
 
 连接mysql数据库：
 
-`mysql -uroot -p`
+```shell
+mysql -uroot -p
+```
 
 创建数据库和表：
 
-`create database test1;`
-
-`use test1;`
-
-`create table test_tb(id int(3),namechar(10));`
-
-`insert into test_tb values(001,'jay');`
+```sql
+create database test1;
+```
+```sql
+use test1;
+```
+```sql
+create table test_tb(id int(3),namechar(10));
+```
+```sql
+insert into test_tb values(001,'jay');
+```
 
 ![img](../images/mysql-17.png)
 
@@ -314,18 +357,25 @@ spec:
 
 连接mysql-slave的pod容器：
 
-`kubectl exec -it mysql-slave-2kc2m/bin/bash`
+```shell
+kubectl exec -it mysql-slave-2kc2m/bin/bash
+```
 
 连接数据库：
 
-`mysql -uroot -p`
+```shell
+mysql -uroot -p
+```
 
 查询数据库和表：
 
-`show databases;`
-
-`use test1;`
-
-`select * from test_tb;`
-
+```sql
+show databases;
+```
+```sql
+use test1;
+```
+```sql
+select * from test_tb;
+```
 ![img](../images/mysql-18.png)
