@@ -14,7 +14,7 @@ vi grafana-deployment.yaml
 
 如果后续使用 kube-apiserver 或者 kubectl proxy 访问 grafana dashboard，则必须将 GF_SERVER_ROOT_URL 设置为 /api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/，否则后续访问grafana时访问时提示找不到:
 
-<http://10.100.1.31:8086/api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/api/dashboards/home> 页面；
+<http://x.x.x.x:8086/api/v1/proxy/namespaces/kube-system/services/monitoring-grafana/api/dashboards/home> 页面；
 
 ## 2、配置heapster-deployment：
 
@@ -153,7 +153,7 @@ kubectl get svc -n kube-system|grepinfluxdb
 
 ![img](../images/heapster-13.png)
 
-<http://192.168.10.117:8080/api/v1/proxy/namespaces/kube-system/services/monitoring-influxdb:8083/>
+<http://x.x.x.x:8080/api/v1/proxy/namespaces/kube-system/services/monitoring-influxdb:8083/>
 
 在页面的 “Connection Settings” 的 Host 中输入 node IP，Port 中输入 8086 映射的 nodePort 如上面的31662，点击 “Save” 即可：
 
