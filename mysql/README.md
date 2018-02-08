@@ -10,7 +10,9 @@
 
 ### 1.2、运行MySQL容器：
 
-`docker run --name mysql -eMYSQL_ROOT_PASSWORD=bangsun -v /data/mysql/mysql-5.7.20/:/var/lib/mysql -d -p3306:3306 --rm mysql:5.7.20`
+```shell
+docker run --name mysql -eMYSQL_ROOT_PASSWORD=bangsun -v /data/mysql/mysql-5.7.20/:/var/lib/mysql -d -p 3306:3306 --rm mysql:5.7.20
+```
 
 **命令解释：**
 
@@ -46,7 +48,9 @@
 
 `vi Dockerfile`
 
-`RUN sed -i '/\[mysqld\]/aserver-id=1\nlog-bin' /etc/mysql/conf.d/docker.cnf`
+```shell
+RUN sed -i '/\[mysqld\]/aserver-id=1\nlog-bin' /etc/mysql/conf.d/docker.cnf
+```
 
 **命令解释：**
 
@@ -54,11 +58,11 @@
 
 在docker.cnf文件中的[mysqld]下新增两行配置：
 
-`[mysqld]`
-
-`server-id=1`
-
-`log-bin`
+```shell
+[mysqld]
+server-id=1
+log-bin
+```
 
 ![img](../images/mysql-2.png)
 
@@ -66,11 +70,11 @@
 
 `vi docker-entrypoint.sh`
 
-`echo "CREATE USER'$MYSQL_REPLICATION_USER'@'%' IDENTIFIED BY '$MYSQL_REPLICATION_PASSWORD';" | "${mysql[@]}"`
-
-`echo "GRANT REPLICATION SLAVE ON *.*TO '$MYSQL_REPLICATION_USER'@'%' IDENTIFIED BY '​$MYSQL_REPLICATION_PASSWORD';" | "${mysql[@]}"`
-
-`echo 'FLUSH PRIVILEGES ;' |"${mysql[@]}"`
+```shell
+echo "CREATE USER'$MYSQL_REPLICATION_USER'@'%' IDENTIFIED BY '$MYSQL_REPLICATION_PASSWORD';" | "${mysql[@]}"
+echo "GRANT REPLICATION SLAVE ON *.*TO '$MYSQL_REPLICATION_USER'@'%' IDENTIFIED BY '$MYSQL_REPLICATION_PASSWORD';" | "${mysql[@]}"
+echo 'FLUSH PRIVILEGES ;' |"${mysql[@]}"
+```
 
 **这三句话的意思授权远程用户；**
 
@@ -90,17 +94,19 @@
 
 `vi Dockerfile`
 
-`RUN RAND="$(date +%s | rev | cut -c1-2)$(echo ${RANDOM})" && sed -i '/\[mysqld\]/aserver-id='$RAND'\nlog-bin' /etc/mysql/conf.d/docker.cnf`
+```shell
+RUN RAND="$(date +%s | rev | cut -c1-2)$(echo ${RANDOM})" && sed -i '/\[mysqld\]/aserver-id='$RAND'\nlog-bin' /etc/mysql/conf.d/docker.cnf
+```
 
 **命令解释：**
 
 在docker.cnf文件中的[mysqld]下新增两行配置：
 
-`[mysqld]`
-
-`server-id=RAND`
-
-`log-bin`
+```shell
+[mysqld]
+server-id=RAND
+log-bin
+```
 
 这里server-id用的是随机数；
 
@@ -108,11 +114,13 @@
 
 ### 3.2、修改docker-entrypoint.sh：
 
-`echo "STOP SLAVE;" |"${mysql[@]}"`
+`vi docker-entrypoint.sh`
 
-`echo "CHANGE MASTER TOmaster_host='$MYSQL_MASTER_SERVICE_HOST',master_user='​$MYSQL_REPLICATION_USER', master_password='$MYSQL_REPLICATION_PASSWORD';" | "​${mysql[@]}"`
-
-`echo "START SLAVE;" |"${mysql[@]}"`
+```shell
+echo "STOP SLAVE;" |"${mysql[@]}"
+echo "CHANGE MASTER TOmaster_host='$MYSQL_MASTER_SERVICE_HOST',master_user='$MYSQL_REPLICATION_USER', master_password='$MYSQL_REPLICATION_PASSWORD';" | "${mysql[@]}"
+echo "START SLAVE;" |"${mysql[@]}"
+```
 
 **注意：**
 
@@ -138,59 +146,35 @@ k8s的service创建后，会自动分配一个cluster ip，这个cluster ip是�
 
 `vi mysql-master-rc.yml`
 
-`apiVersion: v1`
-
-`kind: ReplicationController`
-
-`metadata:`
-
-   `name: mysql-master`
-
- `labels:`
-
-   `name: mysql-master`
-
-`spec:`
-
- `replicas: 1`
-
- `selector:`
-
-   `name: mysql-master`
-
- `template:`
-
-   `metadata:`
-
-`​     labels:`
-
-​`       name: mysql-master`
-
-   `spec:`
-
-`​     containers:`
-
-​`     - name: mysql-master`
-
-​`       image: jaychiu/mysql-master:5.7.21`
-
-`​       ports:`
-
-​`       - containerPort: 3306`
-
-​`       env:`
-
-`​       - name: MYSQL_ROOT_PASSWORD`
-
-​`         value: "bangsun"`
-
-`​       - name: MYSQL_REPLICATION_USER`
-
-`​          value: "jaychiu"`
-
-`​       - name: MYSQL_REPLICATION_PASSWORD`
-
-​`         value: "bangsun"`
+```yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mysql-master
+  labels:
+    name: mysql-master
+spec:
+  replicas: 1
+  selector:
+    name: mysql-master
+  template:
+    metadata:
+      labels:
+        name: mysql-master
+    spec:
+      containers:
+      - name: mysql-master
+        image: jaychiu/mysql-master:5.7.21
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "bangsun"
+        - name: MYSQL_REPLICATION_USER
+           value: "jaychiu"
+        - name: MYSQL_REPLICATION_PASSWORD
+           value: "bangsun"
+```
 
 部署mysql-master的rc服务：
 
@@ -200,29 +184,20 @@ k8s的service创建后，会自动分配一个cluster ip，这个cluster ip是�
 
 `vi mysql-master-svc.yml`
 
-`apiVersion: v1`
-
-`kind: Service`
-
-`metadata:`
-
- `name: mysql-master`
-
- `labels:`
-
-   `name: mysql-master`
-
-`spec:`
-
- `ports:`
-
-  `-port: 3306`
-
-   `targetPort: 3306`
-
- `selector:`
-
-`name:mysql-master`
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-master
+  labels:
+    name: mysql-master
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    name:mysql-master
+```
 
 部署mysql-master的svc服务：
 
@@ -242,63 +217,38 @@ k8s的service创建后，会自动分配一个cluster ip，这个cluster ip是�
 
 `vi mysql-slave-rc.yml`
 
-`apiVersion: v1`
+```yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mysql-slave
+  labels:
+    name: mysql-slave
+spec:
+  replicas: 2
+  selector:
+    name: mysql-slave
+  template:
+    metadata:
+      labels:
+        name: mysql-slave
+    spec:
+      containers:
+      - name: mysql-slave
+        image: jaychiu/mysql-slave:5.7.21
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "bangsun"
+        - name: MYSQL_REPLICATION_USER
+          value: "jaychiu"
+        - name: MYSQL_REPLICATION_PASSWORD
+          value: "bangsun"
+        - name: MYSQL_MASTER_SERVICE_HOST
+          value: mysql-master
+```
 
-`kind: ReplicationController`
-
-`metadata:`
-
- `name: mysql-slave`
-
- `labels:`
-
-   `name: mysql-slave`
-
-`spec:`
-
- `replicas: 2`
-
- `selector:`
-
-   `name: mysql-slave`
-
- `template:`
-
-   `metadata:`
-
-​`     labels:`
-
-`​       name: mysql-slave`
-
-   `spec:`
-
-`​     containers:`
-
-`​     - name: mysql-slave`
-
-​`       image: jaychiu/mysql-slave:5.7.21`
-
-`​       ports:`
-
-`​       - containerPort: 3306`
-
-`​       env:`
-
-`​       - name: MYSQL_ROOT_PASSWORD`
-
-`​         value: "bangsun"`
-
-`​       - name: MYSQL_REPLICATION_USER`
-
-`​         value: "jaychiu"`
-
-`​       - name: MYSQL_REPLICATION_PASSWORD`
-
-`​         value: "bangsun"`
-
-`​        - name: MYSQL_MASTER_SERVICE_HOST`
-
-​`         value: mysql-master`
 
 部署mysql-slave的rc服务：
 
@@ -308,30 +258,20 @@ k8s的service创建后，会自动分配一个cluster ip，这个cluster ip是�
 
 `vi mysql-slave-svc.yml`
 
-`apiVersion: v1`
-
-`kind: Service`
-
-`metadata:`
-
- `name: mysql-slave`
-
- `labels:`
-
-   `name: mysql-slave`
-
-`spec:`
-
- `ports:`
-
-  `-port: 3306`
-
-   `targetPort: 3306`
-
- `selector:`
-
-`name:mysql-slave`
-
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-slave
+  labels:
+    name: mysql-slave
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    name:mysql-slave
+```
 部署mysql-slave的svc服务：
 
 `kubectl create -f mysql-slave-svc.yml`
