@@ -7,6 +7,5 @@
 5. [Kubernetes集群部署Nginx服务；](nginx/README.md)
 6. [Kubernetes集群部署Traefik-ingress插件；](traefik-ingress/README.md)
 7. [Kubernetes集群部署MySQL服务；](mysql/README.md)
-8. **持续更新中。。。**
-9. ​
+8. **持续更新中。。。**​
 
