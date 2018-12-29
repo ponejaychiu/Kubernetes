@@ -33,7 +33,7 @@ influxdb 官方建议使用命令行或 HTTP API 接口来查询数据库，从 
 **导出镜像中的 influxdb 配置文件**
 
 ```shell
-docker run --rm --entrypoint 'cat' -it jaychiu/heapster-influxdb-amd64:v1.1.1/etc/config.toml > config.toml.orig
+docker run --rm --entrypoint 'cat' -it jaychiu/heapster-influxdb-amd64:v1.1.1 /etc/config.toml > config.toml.orig
 cp config.toml.orig config.toml
 vi config.toml
 ```
