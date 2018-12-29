@@ -17,6 +17,8 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: influxdb-storage
+        - mountPath: /etc
+          name: influxdb-storage
       volumes:
       - name: influxdb-storage
         emptyDir: {}
