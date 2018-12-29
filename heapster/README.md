@@ -148,7 +148,7 @@ show tag values from 'uptime' with key='namespace_name'
 ## 8、访问influxdb admin UI：
 
 ```shell
-kubectl get svc -n kube-system|grepinfluxdb
+kubectl get svc -n kube-system |grep influxdb
 ```
 
 ![img](../images/heapster-13.png)
